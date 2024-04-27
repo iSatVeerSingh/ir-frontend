@@ -1,0 +1,24 @@
+.t-b {
+  font-weight: bold;
+}
+
+.t-i {
+  font-style: italic;
+}
+
+.t-u {
+  text-decoration: underline;
+}
+
+.t-link {
+  color: rgb(33, 111, 219);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+input::file-selector-button {
+  height: 100%;
+  border: none;
+  border-right: 1px solid gray;
+  cursor: pointer;
+}
