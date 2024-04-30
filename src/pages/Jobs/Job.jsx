@@ -31,8 +31,8 @@ import DataNotFound from "../../components/DataNotFound";
 import ButtonPrimary from "../../components/ButtonPrimary";
 import DatalistInput from "../../components/DatalistInput";
 import ButtonOutline from "../../components/ButtonOutline";
-import inspectionApi, { inspectionApiAxios } from "../../api/inspectionApi";
-// reports@correctinspections.com.au
+import inspectionApi from "../../api/inspectionApi";
+import useAxios from "../../utils/useAxios";
 
 const Job = () => {
   const { job_number } = useParams();
@@ -43,7 +43,6 @@ const Job = () => {
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const { onOpen, onClose, isOpen } = useDisclosure();
-  const [progress, setProgress] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [starting, setStarting] = useState(false);
@@ -54,6 +53,8 @@ const Job = () => {
     onClose: onCloseAlert,
   } = useDisclosure();
   const recommendationRef = useRef(null);
+
+  const { progress, postData } = useAxios();
 
   const getJob = async () => {
     setLoading(true);
@@ -204,20 +205,11 @@ const Job = () => {
     const data = nonSyncedItemsResponse.data;
     if (data.report_items.length > 0 || data.deleted_report_items.length > 0) {
       setUploading(true);
-      let syncResponse = await inspectionApiAxios.post(
-        "/report-items?bulk=true",
-        data,
-        {
-          onUploadProgress: (e) => {
-            const upload = Math.floor(e.progress * 100);
-            setProgress(upload);
-          },
-        }
-      );
+      let syncResponse = await postData("/report-items?bulk=true", data);
 
-      if (syncResponse.status < 200 || syncResponse.status > 299) {
+      if (syncResponse.error) {
         toast({
-          title: syncResponse.data.message,
+          title: syncResponse.error,
           status: "error",
           duration: 4000,
         });

@@ -158,7 +158,7 @@ const ItemPreview = () => {
                 </Text>
                 <Text color={"gray.600"}>{reportItem?.summary || "N/A"}</Text>
               </Flex>
-              {reportItem.embedded_images && (
+              {/* {reportItem.embedded_images && (
                 <>
                   <Text fontSize={"lg"} color={"gray.700"} minW={"200px"}>
                     Embedded Images
@@ -174,7 +174,7 @@ const ItemPreview = () => {
                     ))}
                   </Grid>
                 </>
-              )}
+              )} */}
               <Box mt={3}>
                 <Button
                   colorScheme="red"

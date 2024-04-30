@@ -13,16 +13,30 @@ import { useState } from "react";
 import ButtonPrimary from "../components/ButtonPrimary";
 import { useNavigate } from "react-router-dom";
 import clientApi from "../api/clientApi";
-import axios from "axios";
-import { inspectionApiAxios } from "../api/inspectionApi";
+import useAxios from "../utils/useAxios";
+
+export const initLoader = () => {
+  try {
+    const user = localStorage.getItem("user");
+    if (!user) {
+      return redirect("/login");
+    }
+
+    return null;
+  } catch (err) {
+    console.log(err);
+    return redirect("/login");
+  }
+};
 
 const Init = () => {
   const [installing, setInstalling] = useState(false);
   const [installed, setInstalled] = useState(false);
   const [error, setError] = useState(null);
-  const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState("");
   const navigate = useNavigate();
+
+  const { progress, fetchData } = useAxios();
 
   const installApp = async () => {
     setInstalling(true);
@@ -44,86 +58,62 @@ const Init = () => {
         return;
       }
 
-      let auth = "";
-
       setStatus("Fetching notes");
       // Fetch notes from server and save offline to use it while adding report items;
-      let response = await inspectionApiAxios.get("/install-notes", {
-        onDownloadProgress(e) {
-          const downloadpr = Math.floor(e.progress * 100);
-          setProgress(downloadpr);
-        },
-      });
+      let response = await fetchData("/install-notes");
 
-      if (response.status !== 200) {
-        setError(response.data.message || "Something went wrong");
+      if (response.error) {
+        setError(response.error || "Something went wrong");
         setInstalling(false);
         return;
       }
 
       let initResponse = await clientApi.post("/init-notes", response.data);
       if (initResponse.error) {
-        setError(response.data.message || "Something went wrong");
+        setError(response.error || "Something went wrong");
         setInstalling(false);
         return;
       }
 
       // Fetch library items and save to offline database
       setStatus("Fetching items");
-      // Fetch notes from server and save offline to use it while adding report items;
-      response = await inspectionApiAxios.get("/install-items", {
-        onDownloadProgress(e) {
-          const downloadpr = Math.floor(e.progress * 100);
-          setProgress(downloadpr);
-        },
-      });
-
-      if (response.status !== 200) {
-        setError(response.data.message || "Something went wrong");
+      response = await fetchData(`/install-items`);
+      if (response.error) {
+        setError(response.error || "Something went wrong");
         setInstalling(false);
         return;
       }
 
       initResponse = await clientApi.post("/init-items", response.data);
       if (initResponse.error) {
-        setError(response.data.message || "Something went wrong");
+        setError(response.error || "Something went wrong");
         setInstalling(false);
         return;
       }
       // Fetch item categories and save to offline database
       setStatus("Fetching item categories");
       // Fetch notes from server and save offline to use it while adding report items;
-      response = await inspectionApiAxios.get("/install-categories", {
-        onDownloadProgress(e) {
-          const downloadpr = Math.floor(e.progress * 100);
-          setProgress(downloadpr);
-        },
-      });
+      response = await fetchData("/install-categories");
 
-      if (response.status !== 200) {
-        setError(response.data.message || "Something went wrong");
+      if (response.error) {
+        setError(response.error || "Something went wrong");
         setInstalling(false);
         return;
       }
 
       initResponse = await clientApi.post("/init-categories", response.data);
       if (initResponse.error) {
-        setError(response.data.message || "Something went wrong");
+        setError(response.error || "Something went wrong");
         setInstalling(false);
         return;
       }
       // Fetch recommendations and save to offline database
       setStatus("Fetching recommendations");
       // Fetch notes from server and save offline to use it while adding report items;
-      response = await inspectionApiAxios.get("/install-recommendations", {
-        onDownloadProgress(e) {
-          const downloadpr = Math.floor(e.progress * 100);
-          setProgress(downloadpr);
-        },
-      });
+      response = await fetchData("/install-recommendations");
 
-      if (response.status !== 200) {
-        setError(response.data.message || "Something went wrong");
+      if (response.error) {
+        setError(response.error || "Something went wrong");
         setInstalling(false);
         return;
       }
@@ -133,7 +123,7 @@ const Init = () => {
         response.data
       );
       if (initResponse.error) {
-        setError(response.data.message || "Something went wrong");
+        setError(response.error || "Something went wrong");
         setInstalling(false);
         return;
       }
@@ -141,22 +131,17 @@ const Init = () => {
       // Fetch recommendations and save to offline database
       setStatus("Fetching initial jobs");
       // Fetch notes from server and save offline to use it while adding report items;
-      response = await inspectionApiAxios.get("/jobs", {
-        onDownloadProgress(e) {
-          const downloadpr = Math.floor(e.progress * 100);
-          setProgress(downloadpr);
-        },
-      });
+      response = await fetchData("/jobs");
 
-      if (response.status !== 200) {
-        setError(response.data.message || "Something went wrong");
+      if (response.error) {
+        setError(response.error || "Something went wrong");
         setInstalling(false);
         return;
       }
 
       initResponse = await clientApi.post("/init-jobs", response.data);
       if (initResponse.error) {
-        setError(response.data.message || "Something went wrong");
+        setError(response.error || "Something went wrong");
         setInstalling(false);
         return;
       }

@@ -306,7 +306,7 @@ const InspectorLibraryItems = () => {
               </Text>
               <Text color={"gray.600"}>{summaryItem?.category}</Text>
             </Flex>
-            <Text fontSize={"lg"} color={"gra.700"} minW={"200px"}>
+            {/* <Text fontSize={"lg"} color={"gra.700"} minW={"200px"}>
               Embedded Images
             </Text>
             {summaryItem?.embedded_images &&
@@ -318,7 +318,7 @@ const InspectorLibraryItems = () => {
               </Grid>
             ) : (
               "N/A"
-            )}
+            )} */}
             <Flex direction={"column"} mt={2}>
               <Text fontSize={"lg"} color={"gray.700"} minW={"200px"}>
                 Summary

@@ -4,7 +4,6 @@ import PageLayout from "../../layouts/PageLayout";
 import Card from "../../components/Card";
 import { useEffect, useRef, useState } from "react";
 import clientApi from "../../api/clientApi";
-import { inspectionApiAxios } from "../../api/inspectionApi";
 import Loading from "../../components/Loading";
 import {
   AlertDialog,
@@ -39,6 +38,7 @@ import getResizedImages from "../../utils/getResizedImages";
 import FilterInput from "../../components/FilterInput";
 import InputBtn from "../../components/InputBtn";
 import DataNotFound from "../../components/DataNotFound";
+import useAxios from "../../utils/useAxios";
 
 const PreviousReport = () => {
   const { job_number } = useParams();
@@ -46,13 +46,14 @@ const PreviousReport = () => {
   const [loading, setLoading] = useState(true);
   const [job, setJob] = useState(null);
   const [fetchingOnline, setFetchingOnline] = useState(false);
-  const [progress, setProgress] = useState();
   const [previousReport, setPreviousReport] = useState(null);
   const [filteredItems, setFilteredItems] = useState([]);
   const itemRef = useRef();
   const filterRef = useRef(null);
   const toast = useToast();
   const [inputError, setInputError] = useState();
+
+  const { progress, fetchData } = useAxios();
 
   const { onOpen, onClose, isOpen } = useDisclosure();
   const {
@@ -96,18 +97,12 @@ const PreviousReport = () => {
       setLoading(false);
       if (response.error) {
         setFetchingOnline(true);
-        const previousResponse = await inspectionApiAxios.get(
-          `/previous-report?customer_id=${jobdata.customer.id}`,
-          {
-            onDownloadProgress: (e) => {
-              const downloadpr = Math.floor(e.progress * 100);
-              setProgress(downloadpr);
-            },
-          }
+        const previousResponse = await fetchData(
+          `/previous-report?customer_id=${jobdata.customer.id}`
         );
-        if (previousResponse.status !== 200) {
+        if (previousResponse.error) {
           toast({
-            title: previousResponse.data.message,
+            title: previousResponse.error,
             duration: 4000,
             status: "error",
           });

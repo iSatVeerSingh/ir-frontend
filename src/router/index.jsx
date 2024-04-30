@@ -9,7 +9,7 @@ import LibraryNotes from "../pages/Notes/LibraryNotes";
 import Recommendations from "../pages/Recommendations";
 import JobCategories from "../pages/JobCategories";
 import Login from "../pages/Login";
-import Init from "../pages/Init";
+import Init, { initLoader } from "../pages/Init";
 import Users from "../pages/Users";
 import Jobs from "../pages/Jobs/Jobs";
 import Job from "../pages/Jobs/Job";
@@ -144,5 +144,6 @@ export default createBrowserRouter([
   {
     path: "/init",
     element: <Init />,
+    loader: initLoader,
   },
 ]);
